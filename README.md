@@ -142,3 +142,9 @@ poetry run python manage.py makemigrations
 
 #### 30.1 применяем все миграции и создаем таблицы в базе данных
 poetry run python manage.py migrate
+
+#### 30.2 запускаем кастомную команду для наполнения таблицы платежей тестовыми данными
+poetry run python manage.py fill_payments
+
+#### 30.2 выгружаем данные платежей напрямую в файл payments_fixture.json
+poetry run python -Xutf8 manage.py dumpdata users.Payment --indent 2 -o payments_fixture.json
