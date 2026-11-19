@@ -25,17 +25,3 @@ class PaymentListAPIView(generics.ListAPIView):
     filterset_fields = ('paid_course', 'paid_lesson', 'payment_method')
     # 30.2 разрешаем сортировку по дате оплаты (по возрастанию и убыванию)
     ordering_fields = ('payment_date',)
-
-
-#-----30.1----
-
-# from rest_framework import generics
-# from users.models import User
-# from users.serializers import UserSerializer
-#
-#
-# class UserUpdateAPIView(generics.RetrieveUpdateAPIView):
-#     # 30.1 указываем сериализатор для просмотра и обновления профиля пользователя
-#     serializer_class = UserSerializer
-#     # 30.1 передаем набор всех пользователей для возможности редактирования любого профиля по ID
-#     queryset = User.objects.all()
