@@ -148,3 +148,6 @@ poetry run python manage.py fill_payments
 
 #### 30.2 выгружаем данные платежей напрямую в файл payments_fixture.json
 poetry run python -Xutf8 manage.py dumpdata users.Payment --indent 2 -o payments_fixture.json
+
+#### 30.2 устанавливаем библиотеку django-filter через Poetry для фильтрации и сортировки в DRF
+poetry add django-filter
