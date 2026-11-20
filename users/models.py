@@ -1,5 +1,7 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
+# 30.2 импортируем модели Course и Lesson для связи с платежами
+from materials.models import Course, Lesson
 
 
 class User(AbstractUser):
@@ -54,3 +56,80 @@ class User(AbstractUser):
     def __str__(self):
         # 30.1 возвращаем email пользователя при строковом представлении объекта
         return self.email
+
+
+class Payment(models.Model):
+    # 30.2 определяем доступные способы оплаты через константы и кортеж вариантов выбора
+    PAYMENT_CASH = 'cash'
+    PAYMENT_TRANSFER = 'transfer'
+    PAYMENT_METHOD_CHOICES = [
+        (PAYMENT_CASH, 'Наличные'),
+        (PAYMENT_TRANSFER, 'Перевод на счет'),
+    ]
+
+    # 30.2 связываем платеж с конкретным пользователем через внешний ключ
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name='payments',
+        verbose_name='Пользователь',
+        help_text='Выберите пользователя, совершившего оплату'
+    )
+
+    # 30.2 добавляем поле даты и времени оплаты с автоматической фиксацией при создании записи
+    payment_date = models.DateTimeField(
+        auto_now_add=True,
+        verbose_name='Дата оплаты',
+        help_text='Дата и время проведения платежа'
+    )
+
+    # 30.2 добавляем необязательную ссылку на оплаченный курс
+    paid_course = models.ForeignKey(
+        Course,
+        on_delete=models.SET_NULL,
+        blank=True,
+        null=True,
+        related_name='payments',
+        verbose_name='Оплаченный курс',
+        help_text='Выберите курс, если оплачен курс целиком'
+    )
+
+    # 30.2 добавляем необязательную ссылку на отдельно оплаченный урок
+    paid_lesson = models.ForeignKey(
+        Lesson,
+        on_delete=models.SET_NULL,
+        blank=True,
+        null=True,
+        related_name='payments',
+        verbose_name='Оплаченный урок',
+        help_text='Выберите урок, если оплачен отдельный урок'
+    )
+
+    # 30.2 добавляем поле суммы оплаты с фиксированной точностью до копеек
+    amount = models.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+        verbose_name='Сумма оплаты',
+        help_text='Укажите сумму платежа'
+    )
+
+    # 30.2 добавляем поле выбора способа оплаты (наличные или перевод на счет)
+    payment_method = models.CharField(
+        max_length=20,
+        choices=PAYMENT_METHOD_CHOICES,
+        default=PAYMENT_TRANSFER,
+        verbose_name='Способ оплаты',
+        help_text='Выберите способ оплаты'
+    )
+
+    class Meta:
+        # 30.2 задаем человекочитаемые названия модели платежей для административной панели
+        verbose_name = 'Платеж'
+        verbose_name_plural = 'Платежи'
+        # 30.2 устанавливаем сортировку по умолчанию от самых новых платежей к старым
+        ordering = ('-payment_date',)
+
+    def __str__(self):
+        # 30.2 возвращаем информативное строковое представление платежа
+        target = self.paid_course if self.paid_course else self.paid_lesson
+        return f'{self.user.email} — {target} ({self.amount} руб.)'

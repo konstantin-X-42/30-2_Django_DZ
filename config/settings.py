@@ -21,12 +21,22 @@ INSTALLED_APPS = [
 
     # 30.1 подключаем библиотеку Django REST Framework согласно документации
     'rest_framework',
+    # 30.2 подключаем библиотеку django-filter для фильтрации данных в API
+    'django_filters',
 
     # 30.1 регистрируем созданные приложения проекта
     'users',
     'materials',
-
 ]
+
+
+# 30.2 настраиваем глобальный бэкенд фильтрации DRF для всех представлений проекта
+REST_FRAMEWORK = {
+    'DEFAULT_FILTER_BACKENDS': (
+        'django_filters.rest_framework.DjangoFilterBackend',
+    ),
+}
+
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
